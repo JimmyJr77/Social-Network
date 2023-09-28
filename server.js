@@ -8,12 +8,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Import routes
-const userRoutes = require('./routes/userRoutes');
-const thoughtRoutes = require('./routes/thoughtRoutes');
+// const userRoutes = require('./routes/userRoutes');
+// const thoughtRoutes = require('./routes/thoughtRoutes');
+const routes = require('./routes'); // Imports all routes from routes/index.js
+
 
 // Use routes
-app.use('/api/users', userRoutes);
-app.use('/api/thoughts', thoughtRoutes);
+app.use('/api', routes); // Uses the consolidated routes
+// app.use('/api/users', userRoutes);
+// app.use('/api/thoughts', thoughtRoutes);
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/social-network-api', {
   useNewUrlParser: true,
