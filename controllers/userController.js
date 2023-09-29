@@ -9,7 +9,7 @@ const userController = {
   },
 
   // Get one user by id
-  getSingleUser({ params }, res) {
+  getUserById({ params }, res) {
     User.findById(params.id)
       .then(dbUserData => {
         if (!dbUserData) {
@@ -52,8 +52,46 @@ const userController = {
         res.json(dbUserData);
       })
       .catch(err => res.status(400).json(err));
-  }
+  },
+
+  // Add a friend to a user's friend list
+  addFriend({ params }, res) {
+    User.findByIdAndUpdate(
+      params.userId,
+      { $push: { friends: params.friendId } },
+      { new: true, runValidators: true }
+    )
+    .then(dbUserData => {
+      if (!dbUserData) {
+        res.status(404).json({ message: 'No user found with this id!' });
+        return;
+      }
+      res.json(dbUserData);
+    })
+    .catch(err => res.status(400).json(err));
+  },
+
+  // Remove a friend from a user's friend list
+  removeFriend({ params }, res) {
+    User.findByIdAndUpdate(
+      params.userId,
+      { $pull: { friends: params.friendId } },
+      { new: true, runValidators: true }
+    )
+    .then(dbUserData => {
+      if (!dbUserData) {
+        res.status(404).json({ message: 'No user found with this id!' });
+        return;
+      }
+      res.json(dbUserData);
+    })
+    .catch(err => res.status(400).json(err));
+  },
+
+
 };
+
+
 
 module.exports = userController;
 

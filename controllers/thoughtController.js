@@ -9,7 +9,7 @@ const thoughtController = {
   },
 
   // Get one thought by id
-  getSingleThought({ params }, res) {
+  getThoughtById({ params }, res) {
     Thought.findById(params.id)
       .then(dbThoughtData => {
         if (!dbThoughtData) {
@@ -52,7 +52,43 @@ const thoughtController = {
         res.json(dbThoughtData);
       })
       .catch(err => res.status(400).json(err));
-  }
+  },
+
+  // Add a reaction to a thought
+  addReaction({ params, body }, res) {
+    Thought.findByIdAndUpdate(
+      params.thoughtId,
+      { $push: { reactions: body } },
+      { new: true, runValidators: true }
+    )
+    .then(dbThoughtData => {
+      if (!dbThoughtData) {
+        res.status(404).json({ message: 'No thought found with this id!' });
+        return;
+      }
+      res.json(dbThoughtData);
+    })
+    .catch(err => res.status(400).json(err));
+  },
+
+  // Remove a reaction from a thought
+  removeReaction({ params }, res) {
+    Thought.findByIdAndUpdate(
+      params.thoughtId,
+      { $pull: { reactions: { _id: params.reactionId } } },
+      { new: true }
+    )
+    .then(dbThoughtData => {
+      if (!dbThoughtData) {
+        res.status(404).json({ message: 'No thought found with this id!' });
+        return;
+      }
+      res.json(dbThoughtData);
+    })
+    .catch(err => res.status(400).json(err));
+  },
+
+
 };
 
 module.exports = thoughtController;
