@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Thought = require('./Thought');
 
 const Schema = mongoose.Schema;
 
@@ -32,6 +33,14 @@ const UserSchema = new Schema({
 // Create a virtual called `friendCount` 
 UserSchema.virtual('friendCount').get(function() {
     return this.friends.length;
+});
+
+// Middleware to remove all associated thoughts when a user is deleted
+UserSchema.pre('remove', function(next) {
+    // Remove all the thoughts associated with the user
+    Thought.deleteMany({ username: this.username })
+        .then(() => next())
+        .catch(err => next(err));
 });
 
 const User = mongoose.model('User', UserSchema);

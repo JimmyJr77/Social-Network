@@ -1,4 +1,5 @@
-const { Thought } = require('../models');
+const { Thought, User } = require('../models');
+
 
 const thoughtController = {
   // Get all thoughts
@@ -21,13 +22,25 @@ const thoughtController = {
       .catch(err => res.status(400).json(err));
   },
 
-  // Create a thought
-  createThought({ body }, res) {
-    Thought.create(body)
-      .then(dbThoughtData => res.json(dbThoughtData))
-      .catch(err => res.status(400).json(err));
+  async createThought({ body }, res) {
+    try {
+      const dbThoughtData = await Thought.create(body);
+      
+      // After creating a thought, link it to the user
+      await User.findOneAndUpdate(
+        { username: dbThoughtData.username },
+        { $push: { thoughts: dbThoughtData._id } },
+        { new: true }
+      );
+  
+      res.json(dbThoughtData);
+    } catch (err) {
+      console.error(err); // Log the error to console for debugging
+      res.status(400).json(err);
+    }
   },
-
+  
+  
   // Update a thought by id
   updateThought({ params, body }, res) {
     Thought.findByIdAndUpdate(params.id, body, { new: true, runValidators: true })

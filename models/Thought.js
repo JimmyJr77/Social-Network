@@ -42,7 +42,7 @@ const ThoughtSchema = new Schema({
     reactions: [ReactionSchema]
 });
 
-// Create a virtual called `reactionCount`
+// Creates a virtual called `reactionCount`. It won't be stored in the db. Counts the number of reactions
 ThoughtSchema.virtual('reactionCount').get(function() {
     return this.reactions.length;
 });
