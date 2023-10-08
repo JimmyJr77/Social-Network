@@ -1,15 +1,16 @@
 const { Thought, User } = require('../models');
+const mongoose = require('mongoose');
 
 
 const thoughtController = {
-  // Get all thoughts
+  // Gets all thoughts
   getAllThoughts(req, res) {
     Thought.find({})
       .then(dbThoughtData => res.json(dbThoughtData))
       .catch(err => res.status(400).json(err));
   },
 
-  // Get one thought by id
+  // Gets one thought by id
   getThoughtById({ params }, res) {
     Thought.findById(params.id)
       .then(dbThoughtData => {
@@ -26,7 +27,7 @@ const thoughtController = {
     try {
       const dbThoughtData = await Thought.create(body);
       
-      // After creating a thought, link it to the user
+      // After creating a thought, this links it to the user
       await User.findOneAndUpdate(
         { username: dbThoughtData.username },
         { $push: { thoughts: dbThoughtData._id } },
@@ -35,13 +36,13 @@ const thoughtController = {
   
       res.json(dbThoughtData);
     } catch (err) {
-      console.error(err); // Log the error to console for debugging
+      console.error(err); // Logs the error to console for debugging
       res.status(400).json(err);
     }
   },
   
   
-  // Update a thought by id
+  // Updates a thought by id
   updateThought({ params, body }, res) {
     Thought.findByIdAndUpdate(params.id, body, { new: true, runValidators: true })
       .then(dbThoughtData => {
@@ -54,7 +55,7 @@ const thoughtController = {
       .catch(err => res.status(400).json(err));
   },
 
-  // Delete a thought
+  // Deletes a thought
   deleteThought({ params }, res) {
     Thought.findByIdAndDelete(params.id)
       .then(dbThoughtData => {
@@ -67,7 +68,7 @@ const thoughtController = {
       .catch(err => res.status(400).json(err));
   },
 
-  // Add a reaction to a thought
+  // Adds a reaction to a thought
   addReaction({ params, body }, res) {
     Thought.findByIdAndUpdate(
       params.thoughtId,
@@ -84,16 +85,15 @@ const thoughtController = {
     .catch(err => res.status(400).json(err));
   },
 
-  // Remove a reaction from a thought
   removeReaction({ params }, res) {
-    Thought.findByIdAndUpdate(
-      params.thoughtId,
-      { $pull: { reactions: { _id: params.reactionId } } },
+    Thought.findOneAndUpdate(
+      { "_id": params.thoughtId, "reactions.reactionId": params.reactionId },
+      { $pull: { reactions: { reactionId: params.reactionId } } },
       { new: true }
     )
     .then(dbThoughtData => {
       if (!dbThoughtData) {
-        res.status(404).json({ message: 'No thought found with this id!' });
+        res.status(404).json({ message: 'No thought found with this id or reaction does not exist!' });
         return;
       }
       res.json(dbThoughtData);

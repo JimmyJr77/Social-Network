@@ -14,13 +14,13 @@ app.use((req, res, next) => {
     next();
 });
 
-// Import routes from the routes directory
+// Imports routes from the routes directory
 const routes = require('./routes');
 
-// Use routes with the '/api' prefix
+// Uses routes with the '/api' prefix
 app.use('/api', routes);
 
-// Connect to MongoDB
+// Connects to MongoDB
 connectDB();
 
 // Generic 404 handler
@@ -28,7 +28,7 @@ app.use((req, res) => {
     res.status(404).send('Not Found');
 });
 
-// Start the server
+// Starts the server
 app.listen(PORT, () => {
     console.log(`App running on port ${PORT}!`);
 });

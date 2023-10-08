@@ -1,14 +1,14 @@
 const { User } = require('../models');
 
 const userController = {
-  // Get all users
+  // Gets all users
   getAllUsers(req, res) {
     User.find({})
       .then(dbUserData => res.json(dbUserData))
       .catch(err => res.status(400).json(err));
   },
 
-  // Get one user by id
+  // Gets one user by id
   getUserById({ params }, res) {
     User.findById(params.id)
       .then(dbUserData => {
@@ -21,14 +21,14 @@ const userController = {
       .catch(err => res.status(400).json(err));
   },
 
-  // Create a user
+  // Creates a user
   createUser({ body }, res) {
     User.create(body)
       .then(dbUserData => res.json(dbUserData))
       .catch(err => res.status(400).json(err));
   },
 
-  // Update a user by id
+  // Updates a user by id
   updateUser({ params, body }, res) {
     User.findByIdAndUpdate(params.id, body, { new: true, runValidators: true })
       .then(dbUserData => {
@@ -41,7 +41,7 @@ const userController = {
       .catch(err => res.status(400).json(err));
   },
 
-  // Delete a user
+  // Deletes a user
   deleteUser({ params }, res) {
     User.findByIdAndDelete(params.id)
       .then(dbUserData => {
@@ -54,7 +54,7 @@ const userController = {
       .catch(err => res.status(400).json(err));
   },
 
-  // Add a friend to a user's friend list
+  // Adds a friend to a user's friend list
   addFriend({ params }, res) {
     User.findByIdAndUpdate(
       params.userId,
@@ -71,7 +71,7 @@ const userController = {
     .catch(err => res.status(400).json(err));
   },
 
-  // Remove a friend from a user's friend list
+  // Removes a friend from a user's friend list
   removeFriend({ params }, res) {
     User.findByIdAndUpdate(
       params.userId,
@@ -87,10 +87,6 @@ const userController = {
     })
     .catch(err => res.status(400).json(err));
   },
-
-
 };
-
-
 
 module.exports = userController;
